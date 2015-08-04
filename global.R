@@ -9,7 +9,8 @@ library(shinydashboard)
 library(scales)
 library(devtools)
 library(dygraphs)
-library(XLConnect)
+# library(XLConnect)
+library(readxl)
 
 ### Ajay Pillarisetti, University of California, Berkeley, 2015
 ### V1.0N
@@ -56,8 +57,7 @@ all <- do.call(rbind, all)
 all[,device_id:=substring(serial, nchar(serial)-7, nchar(serial))]
 
 #data prep
-log <- loadWorkbook('~/Dropbox/Ghana_adoption_data_SHARED/Protocols/Data_sheet/version_0.xlsx')
-log.sheet <- readWorksheet(log, "Sheet1", endRow=81)
+log <- read_excel('~/Dropbox/Ghana_adoption_data_SHARED/Protocols/Data_sheet/version_0.xlsx', sheet = "Sheet1")
 log.sheet <- as.data.table(log.sheet)
 setnames(log.sheet, 'X1', 'device_id')
 log.sheet <- log.sheet[,c('device_id','Maternal.ID','Stove.location','BUFFER.OPTIONS','LOCATION.OPTION'), with=F]
