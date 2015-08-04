@@ -15,8 +15,8 @@ library(readxl)
 ### Ajay Pillarisetti, University of California, Berkeley, 2015
 ### V1.0N
 
-install missing packages.
-list.of.packages <- c("shiny","ggplot2","reshape2","plyr","lubridate","data.table","dygraphs","xts","devtools","shinydashboard","scales",'dygraphs','XLConnect')
+# install missing packages.
+list.of.packages <- c("shiny","ggplot2","reshape2","plyr","lubridate","data.table","dygraphs","xts","devtools","shinydashboard","scales",'dygraphs','readxl')
 	new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages))(print(paste("The following packages are not installed: ", new.packages, sep="")))else(print("All packages installed"))
 if(length(new.packages)) install.packages(new.packages)
@@ -52,15 +52,16 @@ Mode <- function(x) {
 
 #create the data
 files <- list.files("~/Dropbox/Ghana_adoption_data_SHARED/serverTest/archive", full.names=T, recursive=T)
+files <- grep('attributes', files, value=T, invert=T)
 all <- lapply(files, fread)
 all <- do.call(rbind, all)
 all[,device_id:=substring(serial, nchar(serial)-7, nchar(serial))]
 
 #data prep
-log <- read_excel('~/Dropbox/Ghana_adoption_data_SHARED/Protocols/Data_sheet/version_0.xlsx', sheet = "Sheet1")
+log.sheet <- read_excel('~/Dropbox/Ghana_adoption_data_SHARED/Protocols/Data_sheet/version_0.xlsx')[1:79,]
 log.sheet <- as.data.table(log.sheet)
-setnames(log.sheet, 'X1', 'device_id')
-log.sheet <- log.sheet[,c('device_id','Maternal.ID','Stove.location','BUFFER.OPTIONS','LOCATION.OPTION'), with=F]
+setnames(log.sheet, '1', 'device_id')
+log.sheet <- log.sheet[,c('device_id','Maternal ID','Stove location','BUFFER OPTIONS','LOCATION OPTION'), with=F]
 setnames(log.sheet, c('device_id','mid','stove_loc','buffer','loc_option'))
 log.sheet
 
