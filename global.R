@@ -51,6 +51,7 @@ Mode <- function(x) {
 }
 
 #create the data
+
 files <- list.files("~/Dropbox/Ghana_adoption_data_SHARED/serverTest/archive", full.names=T, recursive=T)
 files <- grep('attributes', files, value=T, invert=T)
 all <- lapply(files, fread)

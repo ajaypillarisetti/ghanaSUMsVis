@@ -1,5 +1,5 @@
 dashboardPage(
-  dashboardHeader(title = "SUMIT"),
+  dashboardHeader(title = "CheckSUMs"),
   dashboardSidebar(
     sidebarMenu(
 	    menuItem("Overview", tabName = "overview",  icon = icon("list-alt")),
@@ -18,11 +18,17 @@ dashboardPage(
     	tabItems(
 			tabItem("overview",
                 fluidRow(
-                    box(width=4, collapsible = TRUE, status="info", solidHeader=TRUE, title="Welcome to SUMIT: the SUMs-iButton Tool",
-                        h5('SUMIT is a simple tool to visualize, analyize, and output basic usage data from iButton Stove Use Monitors. SUMIT was designed by Ajay Pillarisetti at the University of California, Berkeley, with support from Winrock International and Berkeley Air Monitoring Group. This version has been customized to display data from the Ghana Adoption Study.'),
-                        p("To get started, select a MID at right.")
+                    box(width=4, collapsible = TRUE, status="info", solidHeader=TRUE, title="Introduction",
+                        h5('Text'),
+                        p("")
                     ),
-                    box(width=4, collapsible = FALSE, status='info', solidHeader=T, title='Select an MID.', uiOutput('selectMID')),
+                    column(width=4,
+                        box(width=NULL, collapsible = FALSE, status='info', solidHeader=T, title='Filter Data',
+                            dateRangeInput("dateSelect", label='Select a Date', start = Sys.Date(), end=Sys.Date()+7),
+                            uiOutput('selectMID')
+                        )
+                        # box(width=NULL, collapsible = FALSE, status='info', solidHeader=T, title='Select an MID.')
+                    ),
                     box(width=4, collapsible = FALSE, status='info', solidHeader=T, title='Select files', uiOutput('selectFiles'))
                 ),
                 fluidRow(

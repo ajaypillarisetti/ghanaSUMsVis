@@ -1,5 +1,10 @@
 ### Ajay Pillarisetti, University of California, Berkeley, 2015
 ### V1.0G
+### ADD HORIZONTAL LINE AT 85C
+## 1115M, 1228M, 
+## Write out to RDS (?)
+## ksums diagostics
+
 
 Sys.setenv(TZ="GMT")
 
@@ -10,7 +15,7 @@ shinyServer(function(input, output) {
 	    inFile <- input$files
 	    loc_types <- sapply(strsplit(inFile, ' '),'[[',1)
 	    mid_input <- input$mid
-		dta <- all[mid==mid_input & stove_loc %in% loc_types]
+		dta <- all[as.Date(datetime)>=input$dateSelect[1] & as.Date(datetime)<=input$dateSelect[2] & mid==mid_input & stove_loc %in% loc_types]
 	})
 
 	datasetName <- reactive({
@@ -61,8 +66,12 @@ shinyServer(function(input, output) {
 	fileSamplingInterval <- reactive({as.numeric(data_cleaned()[10,'datetime',with=F]-data_cleaned()[9,'datetime',with=F])})
 
 	output$selectMID <- renderUI({
-		selectInput('mid', "Maternal ID", all[!is.na(mid),unique(mid)])
+		selectInput('mid', "Maternal ID", all[!is.na(mid) & as.Date(datetime)>=input$dateSelect[1] & as.Date(datetime)<=input$dateSelect[2],unique(mid)])
 	})
+
+	# output$selectDate <- renderUI({
+	# })
+
 
 	output$selectFiles <- renderUI({
     	if(is.null(input$mid)) return()
