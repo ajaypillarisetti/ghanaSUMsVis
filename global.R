@@ -59,17 +59,33 @@ all <- do.call(rbind, all)
 all[,device_id:=substring(serial, nchar(serial)-7, nchar(serial))]
 
 #data prep
-log.sheet <- read_excel('~/Dropbox/Ghana_adoption_data_SHARED/Protocols/Data_sheet/version_0.xlsx')[1:79,]
+log.sheet <- read_excel('~/Dropbox/Ghana_adoption_data_SHARED/Stove_use_protocol/SUMS_logsheet_draft_2015-07-2015.xlsx')[,1:5]
 log.sheet <- as.data.table(log.sheet)
-setnames(log.sheet, '1', 'device_id')
-log.sheet <- log.sheet[,c('device_id','Maternal ID','Stove location','BUFFER OPTIONS','LOCATION OPTION'), with=F]
-setnames(log.sheet, c('device_id','mid','stove_loc','buffer','loc_option'))
+setnames(log.sheet, c('device_type','community','device_id','mid','location'))
+log.location <- read_excel('~/Dropbox/Ghana_adoption_data_SHARED/Stove_use_protocol/SUMS_logsheet_draft_2015-07-2015.xlsx', sheet=2)[,4:5]
+log.location <- as.data.table(log.location)
+setnames(log.location, 1:2, c('location', 'description'))
+log.location[,description:=gsub(" - ", "_",description)]
+log.location[,description:=gsub(" #", "_",description)]
+log.location[,description:=gsub(" ", "_",description)]
+log.location[,description:=tolower(description)]
+log.location <- log.location[!is.na(location)]
+
+
 log.sheet
 
 all <- merge(all, log.sheet, by='device_id', all.x=T)
 all[,datetime:=ymd_hms(datetime)]
 
-all[,stove_loc:=gsub(" ","", stove_loc)]
+all[,location:=as.character(location)]
+log.location[,location:=as.character(location)]
+
+
+setkey(all, 'location')
+setkey(log.location, 'location')
+
+all <- log.location[all]
+# all[,stove_loc:=gsub(" ","", stove_loc)]
 
 setkey(all)
 all <- unique(all)

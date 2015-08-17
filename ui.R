@@ -19,8 +19,8 @@ dashboardPage(
 			tabItem("overview",
                 fluidRow(
                     box(width=4, collapsible = TRUE, status="info", solidHeader=TRUE, title="Introduction",
-                        h5('Text'),
-                        p("")
+                        h5('Welcome to CheckSUM!'),
+                        p("CheckSUM is a simple tool to visualize and quickly check the status of stove use monitors in the field. Begin by selecting the date range of interest and maternal ID at right.")
                     ),
                     column(width=4,
                         box(width=NULL, collapsible = FALSE, status='info', solidHeader=T, title='Filter Data',
@@ -29,7 +29,7 @@ dashboardPage(
                         )
                         # box(width=NULL, collapsible = FALSE, status='info', solidHeader=T, title='Select an MID.')
                     ),
-                    box(width=4, collapsible = FALSE, status='info', solidHeader=T, title='Select files', uiOutput('selectFiles'))
+                    box(width=4, collapsible = FALSE, status='info', solidHeader=T, title='Select files', uiOutput('selectFiles'), HTML('<small><em>parentheses contain total date range available for a specific stove in a specific home</em></small>'))
                 ),
                 fluidRow(
                     box(
@@ -40,7 +40,9 @@ dashboardPage(
                     ),
                     box(textOutput("legendARY"), title = "Legend", collapsible = TRUE, status='info', solidHeader=TRUE, width=4),
                     infoBoxOutput('maxTemp'),
-                    infoBoxOutput('minTemp')
+                    infoBoxOutput('minTemp'),
+                    infoBoxOutput('avgDailyRange')
+
                 )
 
 			),      

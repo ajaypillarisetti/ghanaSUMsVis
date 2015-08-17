@@ -13,9 +13,11 @@ shinyServer(function(input, output) {
 	#read in data
 	datasetInput <- reactive({
 	    inFile <- input$files
-	    loc_types <- sapply(strsplit(inFile, ' '),'[[',1)
+	    print(inFile)
+	    loc_types <- sapply(strsplit(inFile, '_'),'[[',1)
+	    desc_types <- print(log.location[location %in% c(loc_types), unique(description)])
 	    mid_input <- input$mid
-		dta <- all[as.Date(datetime)>=input$dateSelect[1] & as.Date(datetime)<=input$dateSelect[2] & mid==mid_input & stove_loc %in% loc_types]
+		dta <- all[as.Date(datetime)>=input$dateSelect[1] & as.Date(datetime)<=input$dateSelect[2] & mid==mid_input & location %in% loc_types & description %in% desc_types]
 	})
 
 	datasetName <- reactive({
@@ -34,7 +36,7 @@ shinyServer(function(input, output) {
 	####################
 	dataXTS.plainplot <- reactive({
 		dta<-data_cleaned()
-		dta.wide <- dcast.data.table(dta, datetime~stove_loc+buffer+device_id, value.var='temp')
+		dta.wide <- dcast.data.table(dta, datetime~description+device_id, value.var='temp')
 		cols <- colnames(dta.wide)[colnames(dta.wide)!='datetime']
 		dta.wide <- dta.wide[, lapply(.SD, as.numeric), by=datetime]
 		cols <- colnames(dta.wide)[colnames(dta.wide)!='datetime']
@@ -75,7 +77,7 @@ shinyServer(function(input, output) {
 
 	output$selectFiles <- renderUI({
     	if(is.null(input$mid)) return()
-	    files <- all[mid==input$mid, paste(unique(stove_loc), " (", unique(paste(as.Date(min(datetime)), as.Date(max(datetime)), sep=" to ")), ")", sep="")]
+	    files <- all[mid==input$mid, paste(unique(location),"_", unique(description), " (", unique(paste(as.Date(min(datetime)), as.Date(max(datetime)), sep=" to ")), ")", sep="")]
 	    checkboxGroupInput("files", "Choose stoves", choices  = files, selected = files)
   	})
 
@@ -89,7 +91,7 @@ shinyServer(function(input, output) {
 		maxThreshold <- 85
 		deviceIDs <- data_cleaned()[temp>maxThreshold, unique(device_id)]
 		infoBox(
-			value = if (maxTemp >= maxThreshold) paste(deviceIDs, collapse=", ") else formatC(maxTemp, digits = 2, format = "f"),
+			value = if (maxTemp >= maxThreshold) paste(deviceIDs, description, collapse=", ") else formatC(maxTemp, digits = 2, format = "f"),
 			title = if (maxTemp >= maxThreshold) "Warning: 85C Exceeded" else "Max Temp",
 			icon = if (maxTemp >= maxThreshold)icon("warning") else icon("chevron-circle-up"),
 			color = if (maxTemp >= maxThreshold) "red" else "green"
@@ -102,10 +104,26 @@ shinyServer(function(input, output) {
 		minThreshold <- 0
 		deviceIDs <- data_cleaned()[temp<=minThreshold,unique(device_id)]
 		infoBox(
-			value = if (minTemp <= minThreshold) paste(deviceIDs, collapse=", ") else formatC(minTemp, digits = 2, format = "f"),
+			value = if (minTemp <= minThreshold) paste(deviceIDs, description, collapse=", ") else formatC(minTemp, digits = 2, format = "f"),
 			title = if (minTemp <= minThreshold) "Warning: Values Below 0" else "Min Temp",
 			icon = if (minTemp <= minThreshold) icon("warning") else icon("chevron-circle-down"),
 			color = if (minTemp <= minThreshold) "red" else "green"
+		)
+	})
+
+	output$avgDailyRange <- renderInfoBox({
+		if (is.null(datasetInput())) return(NULL)
+		data_cleaned()[,yday:=yday(datetime)]
+		data_cleaned()[,temp:=as.numeric(temp)]
+		data_cleaned()[,dailyRange:=max(temp)-min(temp),by='yday']
+		avgDailyRange <- data_cleaned()[location!=12,mean(dailyRange)]
+		dailyRangeThreshold <- 15
+		deviceIDs <- data_cleaned()[avgDailyRange<=dailyRangeThreshold,unique(device_id)]
+		infoBox(
+			value = if (avgDailyRange <= dailyRangeThreshold) paste(deviceIDs, collapse=", ") else formatC(avgDailyRange, digits = 2, format = "f"),
+			title = if (avgDailyRange <= dailyRangeThreshold) paste("Warning: Avg Daily Range ", formatC(avgDailyRange, digits = 2, format = "f"), sep="") else "Avg Daily Range (non-ambient)",
+			icon = if (avgDailyRange <= dailyRangeThreshold) icon("warning") else icon("chevron-circle-down"),
+			color = if (avgDailyRange <= dailyRangeThreshold) "red" else "green"
 		)
 	})
 
@@ -114,7 +132,7 @@ shinyServer(function(input, output) {
 	####################
 	output$allDataTable<-renderPrint({
 		orig <- options(width = 1000)
-		print(melt(data_cleaned(),  id.var=c('datetime','device_id', 'stove_loc', 'buffer')), 1000)
+		print(melt(data_cleaned(),  id.var=c('datetime','device_id', 'location')), 1000)
 		options(orig)
 	})
 
@@ -124,7 +142,7 @@ shinyServer(function(input, output) {
 			End_Date = as.Date(max(datetime)),
 			Max_Temp = max(temp),
 			Min_Temp = min(temp)
-		), by='device_id,stove_loc,buffer']
+		), by='device_id,location']
 	})
 
 	output$diagnosticsOutput <- renderDataTable(diagnostics(), options=list(searchable = FALSE, searching = FALSE, pageLength = 20,rowCallback = I('function(row, data) {
