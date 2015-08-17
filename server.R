@@ -132,7 +132,7 @@ shinyServer(function(input, output) {
 	####################
 	output$allDataTable<-renderPrint({
 		orig <- options(width = 1000)
-		print(melt(data_cleaned(),  id.var=c('datetime','device_id', 'location')), 1000)
+		print(melt(data_cleaned(),  id.var=c('datetime','device_id', 'location', 'description'), measure.var='temp'), 1000)
 		options(orig)
 	})
 
