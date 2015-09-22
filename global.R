@@ -61,6 +61,8 @@ all[,device_id:=substring(serial, nchar(serial)-7, nchar(serial))]
 #data prep
 log.sheet <- read_excel('~/Dropbox/Ghana_adoption_data_SHARED/Stove_use_protocol/SUMS_logsheet_draft_2015-07-2015.xlsx')[,1:5]
 log.sheet <- as.data.table(log.sheet)
+#restruct to i for now
+log.sheet <- log.sheet[Type=='i']
 setnames(log.sheet, c('device_type','community','device_id','mid','location'))
 log.location <- read_excel('~/Dropbox/Ghana_adoption_data_SHARED/Stove_use_protocol/SUMS_logsheet_draft_2015-07-2015.xlsx', sheet=2)[,4:5]
 log.location <- as.data.table(log.location)
