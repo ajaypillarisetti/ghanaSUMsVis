@@ -73,7 +73,6 @@ log.location[,description:=gsub(" ", "_",description)]
 log.location[,description:=tolower(description)]
 log.location <- log.location[!is.na(location)]
 
-
 log.sheet
 
 all <- merge(all, log.sheet, by='device_id', all.x=T)
