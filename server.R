@@ -40,7 +40,7 @@ shinyServer(function(input, output) {
 		cols <- colnames(dta.wide)[colnames(dta.wide)!='datetime']
 		dta.wide <- dta.wide[, lapply(.SD, as.numeric), by=datetime]
 		cols <- colnames(dta.wide)[colnames(dta.wide)!='datetime']
-		as.xts(dta.wide[,c(cols), with=F], order.by=dta.wide$datetime, tz="GMT")
+		as.xts(dta.wide)
 	})
 
 	####################
