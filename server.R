@@ -123,7 +123,7 @@ shinyServer(function(input, output) {
 			value = if (avgDailyRange <= dailyRangeThreshold) paste(deviceIDs, collapse=", ") else formatC(avgDailyRange, digits = 2, format = "f"),
 			title = if (avgDailyRange <= dailyRangeThreshold) paste("Warning: Avg Daily Range ", formatC(avgDailyRange, digits = 2, format = "f"), sep="") else "Avg Daily Range (non-ambient)",
 			icon = if (avgDailyRange <= dailyRangeThreshold) icon("warning") else icon("chevron-circle-down"),
-			color = if (avgDailyRange <= dailyRangeThreshold) "red" else "green"
+			color = if (avgDailyRange <= dailyRangeThreshold) "yellow" else "green"
 		)
 	})
 

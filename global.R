@@ -50,21 +50,26 @@ Mode <- function(x) {
   ux[which.max(tabulate(match(x, ux)))]
 }
 
-#create the data
+#check the OS
+OS <- Sys.info()[['sysname']]
+if(OS == 'Windows'){path_to_dropbox <- paste(Sys.getenv('USERPROFILE'),'\\Dropbox',sep="")} else
+if(OS =='Darwin'){path_to_dropbox <- paste("~/Dropbox")}else(warning("Not Windows or Mac"))
 
-files <- list.files("~/Dropbox/Ghana_adoption_data_SHARED/serverTest/archive", full.names=T, recursive=T)
+
+#create the data
+files <- list.files(paste(path_to_dropbox, "/Ghana_adoption_data_SHARED/serverTest/archive", sep=""), full.names=T, recursive=T)
 files <- grep('attributes', files, value=T, invert=T)
 all <- lapply(files, fread)
 all <- do.call(rbind, all)
 all[,device_id:=substring(serial, nchar(serial)-7, nchar(serial))]
 
 #data prep
-log.sheet <- read_excel('~/Dropbox/Ghana_adoption_data_SHARED/Stove_use_protocol/SUMS_logsheet_draft_2015-07-2015.xlsx')[,1:5]
+log.sheet <- read_excel(paste(path_to_dropbox, '/Ghana_adoption_data_SHARED/Stove_use_protocol/SUMS_logsheet_draft_2015-07-2015.xlsx', sep=""))[,1:5]
 log.sheet <- as.data.table(log.sheet)
 #restruct to i for now
 log.sheet <- log.sheet[Type=='i']
 setnames(log.sheet, c('device_type','community','device_id','mid','location'))
-log.location <- read_excel('~/Dropbox/Ghana_adoption_data_SHARED/Stove_use_protocol/SUMS_logsheet_draft_2015-07-2015.xlsx', sheet=2)[,4:5]
+log.location <- read_excel(paste(path_to_dropbox, '/Ghana_adoption_data_SHARED/Stove_use_protocol/SUMS_logsheet_draft_2015-07-2015.xlsx', sep=""), sheet=2)[,4:5]
 log.location <- as.data.table(log.location)
 setnames(log.location, 1:2, c('location', 'description'))
 log.location[,description:=gsub(" - ", "_",description)]
