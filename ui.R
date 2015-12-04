@@ -3,8 +3,8 @@ dashboardPage(
   dashboardSidebar(
     sidebarMenu(
 	    menuItem("Overview", tabName = "overview",  icon = icon("list-alt")),
-	    menuItem("SUMs Diagnostics", tabName = "diagnostics",  icon = icon("area-chart")),
-    	menuItem("Raw data", tabName = "rawdata",  icon = icon("tasks"))
+	    menuItem("SUMs Diagnostics", tabName = "diagnostics",  icon = icon("area-chart"))
+    	# menuItem("Raw data", tabName = "rawdata",  icon = icon("tasks"))
         # menuItem("Merge Files", tabName = "merge",  icon = icon("files-o"))
     )
   ),
@@ -24,7 +24,7 @@ dashboardPage(
                     ),
                     column(width=4,
                         box(width=NULL, collapsible = FALSE, status='info', solidHeader=T, title='Filter Data',
-                            dateRangeInput("dateSelect", label='Select a Date', start = Sys.Date(), end=Sys.Date()+7),
+                            dateRangeInput("dateSelect", label='Select a Date', start = Sys.Date()-7, end=Sys.Date()),
                             uiOutput('selectMID')
                         )
                         # box(width=NULL, collapsible = FALSE, status='info', solidHeader=T, title='Select an MID.')
@@ -35,7 +35,7 @@ dashboardPage(
                     box(
                         width = 8, height='510px',
                         status = "info", solidHeader = TRUE,
-                        title = "Time-Series Plot",
+                        title = textOutput("selectedMID"),
                         dygraphOutput('plainPlot', height='445px')
                     ),
                     box(textOutput("legendARY"), title = "Legend", collapsible = TRUE, status='info', solidHeader=TRUE, width=4),

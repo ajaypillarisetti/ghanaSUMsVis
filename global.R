@@ -94,4 +94,5 @@ all <- log.location[all]
 # all[,stove_loc:=gsub(" ","", stove_loc)]
 
 setkey(all)
+all[,serial:=substring(serial,1,16)]
 all <- unique(all)

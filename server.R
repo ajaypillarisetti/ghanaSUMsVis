@@ -13,7 +13,7 @@ shinyServer(function(input, output) {
 	#read in data
 	datasetInput <- reactive({
 	    inFile <- input$files
-	    print(inFile)
+	    # print(inFile)
 	    loc_types <- sapply(strsplit(inFile, '_'),'[[',1)
 	    desc_types <- print(log.location[location %in% c(loc_types), unique(description)])
 	    mid_input <- input$mid
@@ -68,8 +68,10 @@ shinyServer(function(input, output) {
 	fileSamplingInterval <- reactive({as.numeric(data_cleaned()[10,'datetime',with=F]-data_cleaned()[9,'datetime',with=F])})
 
 	output$selectMID <- renderUI({
-		selectInput('mid', "Maternal ID", all[!is.na(mid) & as.Date(datetime)>=input$dateSelect[1] & as.Date(datetime)<=input$dateSelect[2],unique(mid)])
+		selectInput('mid', "Maternal ID", all[!is.na(mid) & as.Date(datetime)>=input$dateSelect[1] & as.Date(datetime)<=input$dateSelect[2],sort(unique(mid))])
 	})
+
+	output$selectedMID <- renderText({paste("Time-series plot (", input$mid, ")", sep="")})
 
 	# output$selectDate <- renderUI({
 	# })
@@ -77,7 +79,7 @@ shinyServer(function(input, output) {
 
 	output$selectFiles <- renderUI({
     	if(is.null(input$mid)) return()
-	    files <- all[mid==input$mid, paste(unique(location),"_", unique(description), " (", unique(paste(as.Date(min(datetime)), as.Date(max(datetime)), sep=" to ")), ")", sep="")]
+	    files <- all[mid==input$mid & as.Date(datetime)>=input$dateSelect[1] & as.Date(datetime)<=input$dateSelect[2], paste(unique(location),"_", unique(description),"_", unique(device_id), " (", unique(paste(as.Date(min(datetime)), as.Date(max(datetime)), sep=" to ")), ")", sep="")]
 	    checkboxGroupInput("files", "Choose stoves", choices  = files, selected = files)
   	})
 
@@ -132,7 +134,7 @@ shinyServer(function(input, output) {
 	####################
 	output$allDataTable<-renderPrint({
 		orig <- options(width = 1000)
-		print(melt(data_cleaned(),  id.var=c('datetime','device_id', 'location', 'description'), measure.var='temp'), 1000)
+		# print(melt(data_cleaned(),  id.var=c('datetime','device_id', 'location', 'description'), measure.var='temp'), 1000)
 		options(orig)
 	})
 
