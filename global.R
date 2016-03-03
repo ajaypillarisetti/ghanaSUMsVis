@@ -55,10 +55,10 @@ OS <- Sys.info()[['sysname']]
 if(OS == 'Windows'){path_to_dropbox <- paste(Sys.getenv('USERPROFILE'),'\\Dropbox',sep="")} else
 if(OS =='Darwin'){path_to_dropbox <- paste("~/Dropbox")}else(warning("Not Windows or Mac"))
 
-
 #create the data
 files <- list.files(paste(path_to_dropbox, "/Ghana_adoption_data_SHARED/serverTest/archive", sep=""), full.names=T, recursive=T)
 files <- grep('attributes', files, value=T, invert=T)
+files <- grep('2016', files, value=T)
 all <- lapply(files, fread)
 all <- do.call(rbind, all)
 all[,device_id:=substring(serial, nchar(serial)-7, nchar(serial))]
